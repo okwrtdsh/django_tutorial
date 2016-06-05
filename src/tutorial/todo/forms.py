@@ -2,8 +2,9 @@ from django import forms
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
 
-from django_cbv_utils.forms import SetFromControlMixin
-from tutorial.todo.models import ToDoUser
+from django_cbv_utils.forms import SetFromControlMixin, SetDateTimePickerMixin
+from tutorial.master.models import Category
+from tutorial.todo.models import ToDoUser, ToDo
 
 
 class ToDoUserCreateForm(UserCreationForm, SetFromControlMixin):
@@ -37,4 +38,34 @@ class ToDoUserCreateForm(UserCreationForm, SetFromControlMixin):
             if user is not None and user.is_active:
                     login(self.request, user)
         return todouser
+
+
+class ToDoCreateForm(forms.ModelForm, SetFromControlMixin, SetDateTimePickerMixin):
+
+    class Meta:
+        model = ToDo
+        fields = [
+            "name",
+            "deadline",
+            "priority",
+            "categories",
+            "note",
+        ]
+        widgets = {
+            'categories': forms.CheckboxSelectMultiple()
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super().__init__(*args, **kwargs)
+        self.fields['categories'].queryset = Category.objects.filter(enabled=True)
+        self.fields['categories'].widget.attrs.update({'class': "checkbox"})
+
+    def save(self, commit=True):
+        todo = super().save(commit=False)
+        todo.user = self.request.user.todouser
+        if commit:
+            todo.save()
+            self.save_m2m()
+        return todo
 
