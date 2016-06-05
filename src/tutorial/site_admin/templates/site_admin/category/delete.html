@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}カテゴリー削除{% endblock%}
+
+{% block content %}
+<form method="post">{% csrf_token %}
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h4>カテゴリー削除フォーム</h4>
+    </div>
+    <div class="panel-body">
+      <table class="table table-bordered">
+        <tr><th>表示順</th><td>{{ category.order }}</td></tr>
+        <tr><th>名称</th><td>{{ category.name }}</td></tr>
+        <tr><th>作成日時</th><td>{{ category.created }}</td></tr>
+        <tr><th>更新日時</th><td>{{ category.updated }}</td></tr>
+        <tr><th>有効</th><td>{% if category.enabled %}有効{% else %}無効{% endif %}</td></tr>
+      </table>
+    </div>
+    <div class="panel-footer align-center">
+      <button type="submit" class="btn btn-lg btn-danger">削除</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
