@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}カテゴリー一覧{{ is_paginated }}{% endblock%}
+
+{% block content %}
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>表示順</th><th>名称</th><th>作成日時</th><th>更新日時</th><th>有効</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for category in category_list %}
+    <tr>
+      <td>{{ category.order }}</td>
+      <td>{{ category.name }}</td>
+      <td>{{ category.created }}</td>
+      <td>{{ category.updated }}</td>
+      <td>{% if category.enabled %}有効{% else %}無効{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% if is_paginated %}
+<div class="pagination" style="float:right">
+  <span class="page-links">
+    {% if page_obj.has_previous %}
+    <a href="{% url "site_admin:category_list" %}?page={{ page_obj.previous_page_number }}">previous</a>
+    {% endif %}
+    <span class="page-current">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </span>
+    {% if page_obj.has_next %}
+    <a href="{% url "site_admin:category_list" %}?page={{ page_obj.next_page_number }}">next</a>
+    {% endif %}
+  </span>
+</div>
+{% endif %}
+{% endblock %}
