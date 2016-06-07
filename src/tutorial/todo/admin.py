@@ -1,3 +1,7 @@
 from django.contrib import admin
+from tutorial.todo.models import ToDoUser, ToDo
 
-# Register your models here.
+
+admin.site.register(ToDoUser)
+admin.site.register(ToDo)
+

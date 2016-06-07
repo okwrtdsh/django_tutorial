@@ -1,3 +1,6 @@
 from django.contrib import admin
+from tutorial.master.models import Category
 
-# Register your models here.
+
+admin.site.register(Category)
+
