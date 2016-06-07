@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
 
-    <title>Python講習会2016</title>
+    <title>Django講習会2016</title>
 
     <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
     <meta name="author" content="Hakim El Hattab">
@@ -54,7 +54,387 @@
         <section data-markdown>
           <script type="text/template">
             # Django講習会2016
+            2016/6/18~19
+
             かわら[@okwrtdsh](http://twitter.com/okwrtdsh)
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            # はじめに
+            * 時間的、精神的に余裕が無かった為、資料が雑になっています。
+            * 分かり難い所があったら、すぐに質問してください。
+            * [twitter](http://twitter.com/okwrtdsh)かslackの#djangoで質問して貰えれば、時間的、精神的に余裕がある時に答えます。
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            # Djagnoとは
+            * Pythonで実装されたWebアプリケーションフレームワーク
+            * 複雑で、DB主体のWebサイトの構築を簡単にする
+            * 以下に重点を置く
+              - コンポーネントの再利用性
+              - pluggability(プラグインによる拡張性)
+              - 素早い開発
+              - DRY(Don't Repeat Yourself)の原則
+            * CRUD(Create Read Update Delete)画面を提供
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## Djangoのアーキテクチャ
+            ![http://codezine.jp/article/detail/4065?p=2](http://codezine.jp/static/images/article/4065/fig02.gif)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## Djangoのアーキテクチャ
+            * MTVフレームワーク
+              - MTV(Model, Template, View)がMVC(Model, View, Controller)に相当する
+            * Model
+              - O/Rマッパーが担当、DBへのインターフェース
+            * Template
+              - Template専用言語が用意されている
+            * View
+              - HTTPリクエストを引数にとり、HTTPレスポンスを返す
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            # Webアプリを
+            # 作ってみよう
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## ToDo管理アプリを作る
+            * 環境
+              - Python 3.5
+              - Django 1.8
+              - PostgreSQL 9.5  # 無くても可
+              - Bootstrap 3.3
+              - jQuery 1.12
+            * ER図
+
+            ![](http://plantuml.com/plantuml/png/oq_AIaqkKGWjJYtYoeUmG_9Tyj7vCBPpOabgUdvH9HT8WO9DZQukGZc8eQ2KfwIWgmka3PMmoEJhGcYOCG00)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## ToDo管理アプリを作る
+            * User機能
+              - 新規登録
+              - ログイン/ログアウト
+              - ToDo登録
+              - ToDo一覧
+              - ToDo詳細
+              - ToDo編集
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## ToDo管理アプリを作る
+            * 管理者機能
+              - ログイン/ログアウト
+              - カテゴリーの登録
+              - カテゴリー一覧
+              - カテゴリー編集
+              - カテゴリー削除
+              - CRUD用管理画面(django admin site)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## 環境構築
+            * pyenv, pyenv virtualenvのインストール
+              - ubuntuの方は[ここ](https://github.com/okwrtdsh/chef_pyenv/blob/master/README.md)を参考に
+            * 仮想環境の作成
+            ```bash
+            $ mkdir django_tutorial && cd $_
+            $ pyenv virtualenv 3.5.1 django_tutorial
+            $ pyenv local django_tutorial
+            $ pip install --upgrade pip
+            ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### Djangoのインストールと
+            ### プロジェクトの作成
+            ```bash
+            $ pip install "Django<1.9"
+            $ mkdir src
+            $ django-admin startproject tutorial ./src
+            $ tree
+            .
+            └── src
+                ├── manage.py
+                └── tutorial
+                    ├── __init__.py
+                    ├── settings.py
+                    ├── urls.py
+                    └── wsgi.py
+
+            2 directories, 5 files
+            ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### アプリケーションの作成
+            ```bash
+            $ mkdir src/tutorial/todo
+            $ django-admin startapp todo src/tutorial/todo
+            $ tree src
+            src
+            ├── manage.py
+            └── tutorial
+                ├── __init__.py
+                ├── settings.py
+                ├── todo
+                │   ├── __init__.py
+                │   ├── admin.py
+                │   ├── migrations
+                │   │   └── __init__.py
+                │   ├── models.py
+                │   ├── tests.py
+                │   └── views.py
+                ├── urls.py
+                └── wsgi.py
+
+            3 directories, 11 files
+            ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### アプリケーションの作成
+            ```bash
+            $ mkdir src/tutorial/master
+            $ django-admin startapp master src/tutorial/master
+            $ mkdir src/tutorial/site_admin
+            $ django-admin startapp site_admin src/tutorial/site_admin
+            ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### ライブラリのインストール
+            ```bash
+            # DBがPostgreSQLの場合
+            pip install psycopg2
+            # よく書くコードを私がライブラリ化したもの
+            pip install git+https://github.com/okwrtdsh/django_cbv_utils.git
+            ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### settings.pyの修正
+            * settings.pyは名前の通り設定を記述したファイル
+            * DBや言語、タイムゾーン等の設定の変更
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/d9a1abe90b96a7e1ccb4b4f47b18fde0af9ac561)
+            * [settings.pyについて](https://docs.djangoproject.com/en/1.8/ref/settings/)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### urls.pyの作成
+            * urls.pyはurlとviewを関連付ける役割
+            * app毎にurlを分離する
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/b61241784dee9992606569e73a7c2372513d1cb4)
+            * [urls.pyについて](https://docs.djangoproject.com/en/1.8/ref/urls/)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### デバッグserverの起動
+
+            ```bash
+            $ python manage.py runserver
+            ```
+            ブラウザから[http://localhost:8000](http://localhost:8000)にアクセス
+            ![](./img/welcome2django.png)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### BootstrapとjQueryのダウンロード
+            ```bash
+            $ wget https://github.com/twbs/bootstrap/releases/download/v3.3.6/bootstrap-3.3.6-dist.zip -P /tmp
+            $ unzip /tmp/bootstrap-3.3.6-dist.zip -d /tmp
+            $ mv /tmp/bootstrap-3.3.6-dist tutorial/static
+            $ wget https://code.jquery.com/jquery-1.12.4.min.js -P tutorial/static/js
+            $ wget https://code.jquery.com/jquery-1.12.4.js -P tutorial/static/js
+            $ wget https://code.jquery.com/jquery-1.12.4.min.map -P tutorial/static/js
+            ```
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ### TOPページの作成
+            * Bootstrapの[Basic template](http://getbootstrap.com/getting-started/#template)をベースにしたbase.htmlを作成する
+            * base.htmlを継承したindex.htmlを作成
+            * /にアクセスしてきたrequestに対してindex.htmlを返すように追加
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/c8d3923d1bc15cb31e8b5f3ed2dca9c7d144cbf5)
+            * [Template言語について](https://docs.djangoproject.com/en/1.8/ref/templates/language/)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### TOPページの作成
+            ![](img/1.png)
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ### Modelsの定義
+            * Modelsの情報をもとにDBを自動生成
+            * Modelを変更するとFormやView、Templateなどの一部もしくはすべてに影響を及ぼすので、Model設計は慎重に
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/c8d3923d1bc15cb31e8b5f3ed2dca9c7d144cbf5)
+            * [Modelsについて](https://docs.djangoproject.com/en/1.8/ref/models/)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### Migration
+            * Modelsの情報をDBに反映
+
+            ```bash
+            $ python manage.py makemigrations  # 差分を検出
+            $ python manage.py migrate  # 差分をDBに反映
+            ```
+
+            ### 管理者の登録
+            ```bash
+            $ python manage.py createsuperuser
+            Username (leave blank to use 'okwrtdsh'): admin
+            Email address:  # 何も入力しない
+            Password: test
+            Password (again): test
+            Superuser created successfully.
+            ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### Login/Logout
+            * django.contrib.auth.viewsのlogin,logoutを利用
+            * urlsに追加
+            * login.htmlを作成
+            * nav barにlinkを追加
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/a6b928272a7b0753f1017da66d8bc2826c61aaa9)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### Login/Logout
+            ![](img/3.png)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### Userの新規登録
+            * Formの作成
+            * Viewの作成
+            * Templateの作成
+            * URLの追加
+            * nav barにリンクを追加
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/8712fa32098505818a0547f5bc411261dda8a653)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### カテゴリーの登録
+            * Formの作成
+            * Viewの作成
+            * Templateの作成
+            * URLの追加
+            * nav barにリンクを追加
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/e987ed200ce64bf5389229dfcee623328cf069c0)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### カテゴリーの一覧
+            * Viewの作成
+            * Templateの作成
+            * URLの追加
+            * nav barにリンクを追加
+            * redirect先の変更
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/5b45bd863e43616dad3a417485a8a33cd7c75c3c)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### カテゴリーの修正
+            * Formの作成
+            * Viewの作成
+            * Templateの作成
+            * URLの追加
+            * 一覧にリンクを追加
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/9f491cccb83e8a9749beaee1670f81932e682c19)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### ToDoの登録
+            * Formの作成
+            * Viewの作成
+            * Templateの作成
+            * URLの追加
+            * nav barにリンクを追加
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/63c462718c9ae0a2a483a5be00bf57808c96526a)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### ToDoの一覧
+            * Viewの作成
+            * Templateの作成
+            * URLの追加
+            * nav barにリンクを追加
+            * redirect先の変更
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/faf4c3f7222014f269c7adf36c950998948e5070)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### ToDoの詳細
+            * Viewの作成
+            * Templateの作成
+            * URLの追加
+            * 一覧にリンクを追加
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/a5343a876433e017d9eaacdc9ca3811dd4713aaf)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### ToDoの修正
+            * Formの作成
+            * Viewの作成
+            * Templateの作成
+            * URLの追加
+            * 詳細にリンクを追加
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/b25686f3969bf3e19676c5ef7babe20ee2581594)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### 管理者画面
+            * 最低限の管理者画面を作る
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/ed837b223c49cbc2fefdcc05f81b00ae525766d0)
+            * [admin siteについて](https://docs.djangoproject.com/en/1.8/ref/contrib/admin/)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            # まとめ
           </script>
         </section>
       </div>
