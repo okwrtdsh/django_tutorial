@@ -434,7 +434,25 @@
         </section>
         <section data-markdown>
           <script type="text/template">
+            ### おまけ dockerにdeploy
+            * nginx、postgres、djagnoのコンテナを作成
+            * [diff](https://github.com/okwrtdsh/django_tutorial/commit/3125b9a9b1d606626507d01142c4437d03909e0a)
+            * [uWSGIの使い方](https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/uwsgi/)
+            * デーモンで起動
+            ```bash
+            $ docker-compose up -d
+            ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
             # まとめ
+            * 今回扱わなかった機能がたくさんあるので、詳しくは[Document](https://docs.djangoproject.com/en/1.9/)や[ソースコード](https://github.com/django/django)、[CBVまとめ](https://ccbv.co.uk/)を読んで下さい。
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            # お疲れ様でした！
           </script>
         </section>
       </div>

@@ -5,7 +5,7 @@
 out/
 .DS_Store
 .svn
-log/*.log
+log/
 tmp/**
 node_modules/
 .sass-cache
@@ -15,3 +15,4 @@ npm-debug.log
 .python-version
 src/
 log.txt
+static/
